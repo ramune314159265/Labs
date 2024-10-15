@@ -8,17 +8,32 @@
 </head>
 
 <body>
+	<button type="button" class="windowAppear">出現</button>
+	<button type="button" class="windowRandomAppear">ランダム位置に出現</button>
 	<script>
 		const windowWidth = 300
-		const windowHeight = 200
+		const windowHeight = 209
+		const colors = ['#702e2e', '#125900', '#7b2200', '#114636', '#7c3130', '#722200']
 
 		class DvdLogoWindow {
 			constructor() {
-				this.vectorX = 1
-				this.vectorY = 1.5
+				this.vectorX = 3
+				this.vectorY = 3.5
+				this.color = 'green'
 			}
-			open() {
-				this.window = window.open('about:blank', Math.random(), `width=${windowWidth},height=${windowHeight},top=0,left=0`)
+			open(top = 0, left = 0) {
+				this.window = window.open('about:blank', Math.random(), `width=${windowWidth},height=${windowHeight},top=${top},left=${left}`)
+				this.window.document.body.style.backgroundColor = 'black'
+				this.window.document.body.style.margin = '0'
+
+				const icon = this.window.document.createElement('div')
+				icon.style.width = '100%'
+				icon.style.height = '100%'
+				icon.style.maskImage = 'url("./dvd-icon.png")'
+				icon.style.maskSize = '100%'
+				icon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
+				this.window.document.body.appendChild(icon)
+
 				this.window.addEventListener('resize', () => this.window.resizeTo(windowWidth, windowHeight))
 				requestAnimationFrame(() => this.move())
 			}
@@ -26,13 +41,24 @@
 				if (this.window.closed) {
 					return
 				}
+				if (screen.availWidth <= this.window.screenLeft + this.window.outerWidth || this.window.screenLeft <= 0) {
+					this.vectorX = -this.vectorX
+					this.window.document.body.firstElementChild.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
+				}
+				if (screen.availHeight <= this.window.screenTop + this.window.outerHeight || this.window.screenTop <= 0) {
+					this.vectorY = -this.vectorY
+					this.window.document.body.firstElementChild.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
+				}
 				this.window.moveTo(this.window.screenLeft + this.vectorX, this.window.screenTop + this.vectorY)
 				requestAnimationFrame(() => this.move())
 			}
 		}
-
-		const main = new DvdLogoWindow()
-		main.open()
+		document.querySelector('.windowAppear').addEventListener('click', () => {
+			new DvdLogoWindow().open()
+		})
+		document.querySelector('.windowRandomAppear').addEventListener('click', () => {
+			new DvdLogoWindow().open(screen.availWidth * Math.random(), screen.availHeight * Math.random())
+		})
 	</script>
 </body>
 
