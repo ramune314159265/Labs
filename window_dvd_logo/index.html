@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Window DVD Logo</title>
+</head>
+
+<body>
+	<script>
+		const windowWidth = 300
+		const windowHeight = 150
+		class DvdLogoWindow {
+			constructor() {
+				this.vectorX = 50
+				this.vectorY = 30
+			}
+			open() {
+				this.window = window.open('about:blank', Math.random(), `width=${windowWidth},height=${windowHeight},top=0,left=0`)
+				requestAnimationFrame(this.move)
+			}
+			move() {
+				this.window.moveTo(this.window.screenLeft + this.vectorX, this.window.screenTop + this.vectorY)
+				requestAnimationFrame(this.move)
+			}
+		}
+
+		const main = new DvdLogoWindow()
+		main.open()
+	</script>
+</body>
+
+</html>
