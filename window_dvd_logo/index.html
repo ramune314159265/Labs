@@ -10,19 +10,24 @@
 <body>
 	<script>
 		const windowWidth = 300
-		const windowHeight = 150
+		const windowHeight = 200
+
 		class DvdLogoWindow {
 			constructor() {
-				this.vectorX = 50
-				this.vectorY = 30
+				this.vectorX = 1
+				this.vectorY = 1.5
 			}
 			open() {
 				this.window = window.open('about:blank', Math.random(), `width=${windowWidth},height=${windowHeight},top=0,left=0`)
-				requestAnimationFrame(this.move)
+				this.window.addEventListener('resize', () => this.window.resizeTo(windowWidth, windowHeight))
+				requestAnimationFrame(() => this.move())
 			}
 			move() {
+				if (this.window.closed) {
+					return
+				}
 				this.window.moveTo(this.window.screenLeft + this.vectorX, this.window.screenTop + this.vectorY)
-				requestAnimationFrame(this.move)
+				requestAnimationFrame(() => this.move())
 			}
 		}
 
