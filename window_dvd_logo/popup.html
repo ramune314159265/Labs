@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>DVD</title>
+	<style>
+		* {
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			margin: 0;
+		}
+
+		body {
+			background: black;
+		}
+
+		.icon {
+			mask-image: url("dvd-icon.png");
+			mask-size: 100%;
+			mask-repeat: no-repeat;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="icon"></div>
+	<script>
+		let vectorX = 3
+		let vectorY = 3.5
+
+		const windowWidth = 300
+		const windowHeight = 209
+		const colors = ['#702e2e', '#125900', '#7b2200', '#114636', '#7c3130', '#722200']
+
+		document.querySelector('.icon').style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
+
+		window.addEventListener('resize', () => window.resizeTo(windowWidth, windowHeight))
+		document.addEventListener('contextmenu', e => e.preventDefault())
+
+		const move = () => {
+			if (screen.availWidth <= window.screenLeft + window.outerWidth || window.screenLeft <= 0) {
+				vectorX = -vectorX
+				document.querySelector('.icon').style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
+			}
+			if (screen.availHeight <= window.screenTop + window.outerHeight || window.screenTop <= 0) {
+				vectorY = -vectorY
+				document.querySelector('.icon').style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
+			}
+			window.moveTo(window.screenLeft + vectorX, window.screenTop + vectorY)
+			requestAnimationFrame(() => move())
+		}
+		requestAnimationFrame(() => move())
+	</script>
+</body>
+
+</html>
