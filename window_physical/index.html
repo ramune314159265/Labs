@@ -69,11 +69,31 @@
 			Runner.run(runner, engine)
 			Render.run(render)
 
-			Composite.add(world, [
-				Bodies.circle(width / 2, height / 2, 100),
-				Bodies.circle(width / 2, height / 2, 100)
-			])
+			const objects = []
 
+			const addObjects = (objects) => {
+				console.log(objects)
+				Composite.add(world, objects)
+
+				objects.forEach(object => {
+					const w = window.open("about:blank", object.id, `width=${object.circleRadius * 2},height=${object.circleRadius * 2},top=${object.position.x},left=${object.position.y}`)
+					const move = () => {
+						w.resizeTo(object.circleRadius * 2, object.circleRadius * 2)
+						w.moveTo(object.position.x - object.circleRadius, object.position.y - object.circleRadius)
+						requestAnimationFrame(move)
+					}
+					requestAnimationFrame(move)
+				})
+			}
+
+			addObjects([
+				Bodies.circle(width / 2, height / 2, 100),
+				Bodies.circle(width / 2, height / 2, 100),
+				Bodies.circle(width / 2, height / 2, 100),
+				Bodies.circle(width / 2, height / 2, 100),
+				Bodies.circle(width / 2, height / 2, 100),
+				Bodies.circle(width / 2, height / 2, 100),
+			])
 		}
 
 		init()
