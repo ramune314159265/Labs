@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Window Physical</title>
+</head>
+
+<body>
+	<canvas id="render" style="width: 100%;"></canvas>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js" crossorigin="anonymous"
+		referrerpolicy="no-referrer"></script>
+	<script>
+		const Engine = Matter.Engine,
+			Render = Matter.Render,
+			World = Matter.World,
+			Bodies = Matter.Bodies,
+			Body = Matter.Body,
+			Runner = Matter.Runner,
+			Composite = Matter.Composite,
+			Composites = Matter.Composites,
+			MouseConstraint = Matter.MouseConstraint,
+			Mouse = Matter.Mouse
+
+		const init = () => {
+			const width = screen.availWidth
+			const height = screen.availHeight
+
+			const engine = Engine.create(),
+				runner = Runner.create(),
+				world = engine.world;
+
+			const render = Render.create({
+				canvas: document.querySelector('#render'),
+				engine: engine,
+				options: {
+					width: width,
+					height: height,
+					background: 'FFF',
+					showAngleIndicator: false
+				}
+			})
+
+			const mouse = Mouse.create(render.canvas),
+				mouseConstraint = MouseConstraint.create(engine, {
+					mouse: mouse,
+					constraint: {
+						stiffness: 0.2,
+						render: {
+							visible: false
+						}
+					}
+				})
+
+			Composite.add(world, mouseConstraint)
+			render.mouse = mouse
+
+			const wallWidth = 100
+			const walls = [
+				Bodies.rectangle(width / 2, height + wallWidth / 2, width, wallWidth, { isStatic: true }),
+				Bodies.rectangle(-wallWidth / 2, height / 2, wallWidth, height, { isStatic: true }),
+				Bodies.rectangle(width + wallWidth / 2, height / 2, wallWidth, height, { isStatic: true }),
+				Bodies.rectangle(width / 2, -wallWidth / 2, width, wallWidth, { isStatic: true }),
+			]
+
+			Composite.add(world, walls)
+
+			Runner.run(runner, engine)
+			Render.run(render)
+
+			Composite.add(world, [
+				Bodies.circle(width / 2, height / 2, 100),
+				Bodies.circle(width / 2, height / 2, 100)
+			])
+
+		}
+
+		init()
+	</script>
+</body>
+
+</html>
