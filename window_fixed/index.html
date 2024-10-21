@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Window fixed</title>
+</head>
+
+<body>
+	<script>
+		const elementGetters = [
+			d => {
+				const e = d.createElement('div')
+				e.style.background = 'linear-gradient(90deg, transparent, black)'
+				e.style.width = screen.availWidth
+				e.style.height = screen.availHeight
+				e.style.position = 'absolute'
+				e.dataset.x = 0
+				e.dataset.y = 0
+				return e
+			}, d => {
+				const e = d.createElement('span')
+				e.innerText = '1280x720'
+				e.style.position = 'absolute'
+				e.dataset.x = 1280
+				e.dataset.y = 720
+				return e
+			}, d => {
+				const e = d.createElement('span')
+				e.innerText = 'このテキストは固定されてるみたいに動く'
+				e.style.position = 'absolute'
+				e.dataset.x = 150
+				e.dataset.y = 100
+				return e
+			}, d => {
+				const e = d.createElement('span')
+				e.innerText = '中'
+				e.style.position = 'absolute'
+				e.dataset.x = screen.availWidth / 2
+				e.dataset.y = screen.availHeight / 2
+				return e
+			}, d => {
+				const e = d.createElement('img')
+				e.src = 'https://picsum.photos/300/200'
+				e.style.position = 'absolute'
+				e.dataset.x = 100
+				e.dataset.y = 400
+				return e
+			}, d => {
+				const e = d.createElement('img')
+				e.src = 'https://picsum.photos/300/200'
+				e.style.position = 'absolute'
+				e.dataset.x = 100
+				e.dataset.y = 400
+				return e
+			}, d => {
+				const e = d.createElement('img')
+				e.src = 'https://picsum.photos/532/130'
+				e.style.position = 'absolute'
+				e.dataset.x = 1000
+				e.dataset.y = 200
+				return e
+			}, d => {
+				const e = d.createElement('img')
+				e.src = 'https://picsum.photos/459/254'
+				e.style.position = 'absolute'
+				e.dataset.x = 1100
+				e.dataset.y = 300
+				return e
+			}
+		]
+
+		const spawnWindow = () => {
+			const w = window.open('about:blank', Math.random(), 'width=400,height=300')
+			w.document.body.style.margin = 0
+			w.document.body.style.overflow = 'hidden'
+			w.document.body.append(...elementGetters.map(e => e(w.document)))
+			const moveHandle = () => {
+				if (w.closed) {
+					return
+				}
+				const elements = [...w.document.body.childNodes]
+				elements.forEach(e => {
+					e.style.translate = `${e.dataset.x - w.screenLeft}px ${e.dataset.y - w.screenTop}px`
+				})
+				requestAnimationFrame(moveHandle)
+			}
+			requestAnimationFrame(moveHandle)
+		}
+
+		spawnWindow()
+	</script>
+</body>
+
+</html>
