@@ -8,6 +8,7 @@
 </head>
 
 <body>
+	<button type="button" class="windowAppear">ウィンドウ生成</button>
 	<script>
 		const elementGetters = [
 			d => {
@@ -89,7 +90,9 @@
 			requestAnimationFrame(moveHandle)
 		}
 
-		spawnWindow()
+		document.querySelector('.windowAppear').addEventListener('click', () => {
+			spawnWindow()
+		})
 	</script>
 </body>
 
