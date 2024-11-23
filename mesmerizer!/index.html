@@ -1,18 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>mesmerizer!</title>
-	<style>
-		*{
-			margin: 0;
-			padding: 0;
-			overflow-y: hidden;
-		}
-	</style>
 </head>
+
 <body>
-	<video src="./video.mp4" controls style="width: 100%;"></video>
+	<button type="button" class="play">再生</button>
+	<script>
+		class CharacterWindow {
+			static list = []
+			constructor({ id, name }) {
+				this.id = id
+				this.name = name
+				this.index = CharacterWindow.list.length
+				CharacterWindow.list.push(this)
+			}
+			init() {
+				this.window = window.open('blank.html', Math.random(), 'width=1,height=1,top=0,left=0')
+				this.window.moveTo(0, this.index * 10)
+				this.window.resizeTo(1, 1)
+				this.window.document.title = this.name
+				return Promise.all([
+					new Promise((resolve, reject) => {
+						fetch(`./resources/${this.id}.json`)
+							.then(res => {
+								return res.json()
+							})
+							.then(data => {
+								this.data = data
+								resolve()
+							})
+					}),
+					new Promise((resolve, reject) => {
+						this.window.addEventListener('load', () => {
+							this.video = this.window.document.createElement('video')
+							this.video.muted = true
+							this.video.src = `./resources/${this.id}.webm`
+							this.window.document.body.append(this.video)
+							this.video.addEventListener('loadeddata', async () => {
+								await this.video.play()
+								setTimeout(() => {
+									resolve()
+								}, 3000)
+							}, { once: true })
+							this.video.load()
+						})
+					})
+				])
+			}
+		}
+
+		const start = async () => {
+			const miku = new CharacterWindow({ id: 'miku', name: 'Miku' })
+			const teto = new CharacterWindow({ id: 'teto', name: 'Teto' })
+			await Promise.all(CharacterWindow.list.map(c => c.init()))
+
+			const behaviors = {
+				0: () => {
+					miku.video.currentTime = 0
+					teto.video.currentTime = 0
+				}
+			}
+
+			const startMs = performance.now()
+			let lastHandledFlame = -1
+
+			const loop = () => {
+				const elapsed = performance.now() - startMs
+				const flame = Math.floor(elapsed / (1000 / 24))
+				if (flame <= lastHandledFlame) {
+					setTimeout(loop, 4)
+					return
+				}
+				lastHandledFlame = flame
+				behaviors[flame]?.()
+				CharacterWindow.list.forEach(c => {
+					if (!c.data[flame]?.[0]) {
+						c.window.resizeTo(1, 1)
+						c.window.moveTo(0, c.index * 10)
+						return
+					}
+					c.window.resizeTo(c.data[flame][2], window.screen.availHeight)
+					c.window.moveTo(c.data[flame][1], 0)
+				})
+				setTimeout(loop, 4)
+			}
+			loop()
+		}
+
+		document.querySelector('.play').addEventListener('click', () => {
+			start()
+		})
+	</script>
 </body>
+
 </html>
