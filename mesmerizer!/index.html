@@ -40,6 +40,7 @@
 							this.video.muted = true
 							this.video.src = `./resources/${this.id}.webm`
 							this.window.document.body.append(this.video)
+							this.video.style.transform = `translateY(${-(this.window.outerHeight - this.window.innerHeight)}px)`
 							this.video.addEventListener('loadeddata', async () => {
 								await this.video.play()
 								setTimeout(() => {
@@ -83,7 +84,7 @@
 						c.window.moveTo(0, c.index * 10)
 						return
 					}
-					c.window.resizeTo(c.data[flame][2], window.screen.availHeight)
+					c.window.resizeTo(c.data[flame][2], window.screen.height)
 					c.window.moveTo(c.data[flame][1], 0)
 				})
 				setTimeout(loop, 4)
