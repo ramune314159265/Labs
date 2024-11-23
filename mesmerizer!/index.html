@@ -22,7 +22,7 @@
 				this.window = window.open('blank.html', Math.random(), 'width=1,height=1,top=0,left=0')
 				this.window.moveTo(0, this.index * 10)
 				this.window.resizeTo(1, 1)
-				this.window.document.title = this.name
+				this.window.addEventListener('load', () => this.window.document.title = this.name)
 				return Promise.all([
 					new Promise((resolve, reject) => {
 						fetch(`./resources/${this.id}.json`)
