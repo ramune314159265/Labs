@@ -8,7 +8,7 @@
 </head>
 
 <body>
-	<button type="button" class="play">再生</button>
+	<button type="button" class="showPlayButton">再生ボタンを表示</button>
 	<script>
 		class CharacterWindow {
 			static list = []
@@ -84,7 +84,7 @@
 						c.window.moveTo(0, c.index * 10)
 						return
 					}
-					c.window.resizeTo(c.data[flame][2], window.screen.height)
+					c.window.resizeTo(c.data[flame][2], screen.height)
 					c.window.moveTo(c.data[flame][1], 0)
 				})
 				setTimeout(loop, 4)
@@ -92,8 +92,23 @@
 			loop()
 		}
 
-		document.querySelector('.play').addEventListener('click', () => {
-			start()
+		document.querySelector('.showPlayButton').addEventListener('click', () => {
+			const buttonWindow = window.open('about:blank', Math.random(), 'width=1,height=1,top=0,left=0')
+			setTimeout(() => {
+				buttonWindow.moveTo((screen.width - buttonWindow.outerWidth) / 2, (screen.availHeight - buttonWindow.outerHeight) / 2)
+				const button = buttonWindow.document.createElement('button')
+				button.type = 'button'
+				button.innerText = '再生'
+				button.addEventListener('click', () => {
+					start()
+					const text = 'MESMERIZER!'
+					text.split('').forEach((t, i) => {
+						setTimeout(() => button.innerText = t, (1000 / 24) * i)
+					})
+					setTimeout(() => buttonWindow.close(), (1000 / 24) * text.length)
+				}, { once: true })
+				buttonWindow.document.body.append(button)
+			}, 100)
 		})
 	</script>
 </body>
