@@ -10,19 +10,45 @@
 <body>
 	<button type="button" class="showPlayButton">再生ボタンを表示</button>
 	<script>
-		class CharacterWindow {
-			static list = []
+		class MovingWindow {
+			static map = new Map()
 			constructor({ id, name }) {
 				this.id = id
 				this.name = name
-				this.index = CharacterWindow.list.length
-				CharacterWindow.list.push(this)
+				this.index = MovingWindow.map.size
+				this.movementData = null
+				this.widthOffset = 0
+				this.heightOffset = 0
+				MovingWindow.map.set(id, this)
+			}
+			init() {
+				return Promise.resolve()
+			}
+			move(flame) {
+				if (!this.movementData[flame]?.[0]) {
+					this.window.resizeTo(1, 1)
+					this.window.moveTo(0, this.index * 10)
+					return
+				}
+				this.window.resizeTo(this.movementData[flame][2] + this.widthOffset, screen.height)
+				this.window.moveTo(this.movementData[flame][1] + this.widthOffset / 2, 0)
+			}
+		}
+
+
+		class CharacterWindow extends MovingWindow {
+			constructor({ id, name }) {
+				super({ id, name })
 			}
 			init() {
 				this.window = window.open('blank.html', Math.random(), 'width=1,height=1,top=0,left=0')
 				this.window.moveTo(0, this.index * 10)
 				this.window.resizeTo(1, 1)
-				this.window.addEventListener('load', () => this.window.document.title = this.name)
+				this.window.addEventListener('load', () => {
+					this.window.document.title = this.name
+					this.widthOffset = this.window.outerWidth - this.window.innerWidth
+					this.heightOffset = this.window.outerHeight - this.window.innerHeight
+				})
 				return Promise.all([
 					new Promise((resolve, reject) => {
 						fetch(`./resources/${this.id}.json`)
@@ -30,7 +56,7 @@
 								return res.json()
 							})
 							.then(data => {
-								this.data = data
+								this.movementData = data
 								resolve()
 							})
 					}),
@@ -54,13 +80,68 @@
 			}
 		}
 
+		class BackgroundWindow extends MovingWindow {
+			constructor({ id, name }) {
+				super({ id, name })
+			}
+			init() {
+				this.window = window.open('blank.html', Math.random(), 'width=1,height=1,top=0,left=0')
+				this.window.moveTo(0, this.index * 10)
+				this.window.resizeTo(1, 1)
+				this.window.addEventListener('load', () => {
+					this.window.document.title = this.name
+					this.widthOffset = this.window.outerWidth - this.window.innerWidth
+					this.heightOffset = this.window.outerHeight - this.window.innerHeight
+				})
+				return Promise.all([
+					new Promise((resolve, reject) => {
+						fetch(`./resources/${this.id}.json`)
+							.then(res => {
+								return res.json()
+							})
+							.then(data => {
+								this.movementData = data
+								resolve()
+							})
+					}),
+					new Promise((resolve, reject) => {
+						this.window.addEventListener('load', () => {
+							this.video = this.window.document.createElement('video')
+							this.video.muted = true
+							this.video.src = `./resources/${this.id}.webm`
+							this.window.document.body.append(this.video)
+							this.video.addEventListener('loadeddata', async () => {
+								await this.video.play()
+								setTimeout(() => {
+									resolve()
+								}, 3000)
+							}, { once: true })
+							this.video.load()
+						})
+					})
+				])
+			}
+			move(flame) {
+				if (!this.movementData[flame]?.[0]) {
+					this.window.resizeTo(1, 1)
+					this.window.moveTo(0, this.index * 10)
+					return
+				}
+				this.video.style.transform = this.movementData[flame][4] === 1080 ? `translateY(${-(this.window.outerHeight - this.window.innerHeight)}px)` : `translateY(0px)`
+				this.window.resizeTo(this.movementData[flame][3] + this.widthOffset, this.movementData[flame][4] + this.heightOffset + Math.min(screen.availHeight - (this.movementData[flame][2] + this.movementData[flame][4]), 0))
+				this.window.moveTo(this.movementData[flame][1] + this.widthOffset / 2, this.movementData[flame][2] - this.heightOffset)
+			}
+		}
+
 		const start = async () => {
+			const background = new BackgroundWindow({ id: 'background', name: ' ' })
 			const miku = new CharacterWindow({ id: 'miku', name: 'Miku' })
 			const teto = new CharacterWindow({ id: 'teto', name: 'Teto' })
-			await Promise.all(CharacterWindow.list.map(c => c.init()))
+			await Promise.all(MovingWindow.map.values().map(c => c.init()))
 
 			const behaviors = {
 				0: () => {
+					background.video.currentTime = 0
 					miku.video.currentTime = 0
 					teto.video.currentTime = 0
 				}
@@ -78,14 +159,8 @@
 				}
 				lastHandledFlame = flame
 				behaviors[flame]?.()
-				CharacterWindow.list.forEach(c => {
-					if (!c.data[flame]?.[0]) {
-						c.window.resizeTo(1, 1)
-						c.window.moveTo(0, c.index * 10)
-						return
-					}
-					c.window.resizeTo(c.data[flame][2], screen.height)
-					c.window.moveTo(c.data[flame][1], 0)
+				MovingWindow.map.values().forEach(c => {
+					c.move(flame)
 				})
 				setTimeout(loop, 4)
 			}
