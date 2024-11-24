@@ -137,6 +137,10 @@
 			const background = new BackgroundWindow({ id: 'background', name: ' ' })
 			const miku = new CharacterWindow({ id: 'miku', name: 'Miku' })
 			const teto = new CharacterWindow({ id: 'teto', name: 'Teto' })
+			const music = new Audio('./resources/mesmerizer.mp3')
+			music.volume = 0.25
+			music.muted = true
+			await music.play()
 			await Promise.all(MovingWindow.map.values().map(c => c.init()))
 
 			const behaviors = {
@@ -144,6 +148,8 @@
 					background.video.currentTime = 0
 					miku.video.currentTime = 0
 					teto.video.currentTime = 0
+					music.currentTime = 0
+					music.muted = false
 				}
 			}
 
