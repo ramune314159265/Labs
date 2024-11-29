@@ -194,7 +194,6 @@
 							.decode(new TextEncoder().encode(this.data[flame].text))
 							.replaceAll('�', '?')
 							.replace(/[！-～]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0))
-						console.log(this.textElement.innerText)
 						this.textElement.style.fontFamily = 'system-ui'
 						break
 					}
