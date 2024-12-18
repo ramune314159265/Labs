@@ -14,9 +14,9 @@
 			return array[Math.floor(Math.random() * array.length)]
 		}
 
-		const blockPerPixel = 10
-		const horizontalBlocks = 50
-		const verticalBlocks = 50
+		const blockPerPixel = 2
+		const horizontalBlocks = 250
+		const verticalBlocks = 250
 
 		const mainCanvas = document.createElement('canvas')
 		document.body.appendChild(mainCanvas)
@@ -121,7 +121,7 @@
 
 		const field = new Field()
 
-		setInterval(() => field.tick(), 1000 / 20)
+		setInterval(() => field.tick(), 16.6)
 		mainCanvas.addEventListener('click', () => field.tick())
 
 		const size = 6
@@ -140,8 +140,8 @@
 			if (!isPointerDowned) {
 				return
 			}
-			const pointerX = Math.floor(e.offsetX / blockPerPixel)
-			const pointerY = Math.floor(e.offsetY / blockPerPixel)
+			const pointerX = Math.floor(e.offsetX / blockPerPixel * devicePixelRatio)
+			const pointerY = Math.floor(e.offsetY / blockPerPixel * devicePixelRatio)
 
 			field.setTile(pointerX, pointerY, new Block(field, pointerX, pointerY))
 		})
