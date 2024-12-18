@@ -132,6 +132,19 @@
 			}
 		}
 
+		let isPointerDowned = false
+
+		mainCanvas.addEventListener('pointerdown', () => isPointerDowned = true)
+		mainCanvas.addEventListener('pointerup', () => isPointerDowned = false)
+		mainCanvas.addEventListener('pointermove', e => {
+			if (!isPointerDowned) {
+				return
+			}
+			const pointerX = Math.floor(e.offsetX / blockPerPixel)
+			const pointerY = Math.floor(e.offsetY / blockPerPixel)
+
+			field.setTile(pointerX, pointerY, new Block(field, pointerX, pointerY))
+		})
 
 		//for (let y = 0; y <= 30; y++) {
 		//	field.setTile(centerX, y, new Block(field, centerX, y))
