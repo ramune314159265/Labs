@@ -10,6 +10,10 @@
 <body>
 
 	<script>
+		const randomFromArray = array => {
+			return array[Math.floor(Math.random() * array.length)]
+		}
+
 		const blockPerPixel = 10
 		const horizontalBlocks = 50
 		const verticalBlocks = 50
@@ -57,7 +61,10 @@
 					return
 				}
 
-				this.moveTo(...movablePosition[0])
+				const previousX = this.x
+				this.moveTo(...randomFromArray(movablePosition))
+
+				this.field.getTile(previousX, this.y - 1)?.moveTo(previousX, this.y)
 			}
 		}
 
@@ -114,7 +121,7 @@
 
 		const field = new Field()
 
-		setInterval(() => field.tick(), 1000 / 10)
+		setInterval(() => field.tick(), 1000 / 20)
 		mainCanvas.addEventListener('click', () => field.tick())
 
 		const size = 6
@@ -124,6 +131,11 @@
 				field.setTile(centerX + x, y, new Block(field, centerX + x, y))
 			}
 		}
+
+
+		//for (let y = 0; y <= 30; y++) {
+		//	field.setTile(centerX, y, new Block(field, centerX, y))
+		//}
 	</script>
 </body>
 
