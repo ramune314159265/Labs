@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sand Sandbox</title>
+</head>
+
+<body>
+
+	<script>
+		const blockPerPixel = 10
+		const horizontalBlocks = 50
+		const verticalBlocks = 50
+
+		const mainCanvas = document.createElement('canvas')
+		document.body.appendChild(mainCanvas)
+		const ctx = mainCanvas.getContext('2d')
+
+		const width = horizontalBlocks * blockPerPixel
+		const height = verticalBlocks * blockPerPixel
+		mainCanvas.width = width
+		mainCanvas.height = height
+		mainCanvas.style.width = (width / devicePixelRatio) + 'px'
+		mainCanvas.style.height = (height / devicePixelRatio) + 'px'
+
+		class Block {
+			constructor(field, x, y) {
+				this.field = field
+				this.x = x
+				this.y = y
+				this.color = 'black'
+			}
+			moveTo(x, y) {
+				this.field.setTile(this.x, this.y, 0)
+				this.x = x
+				this.y = y
+				this.field.setTile(x, y, this)
+			}
+			tick() {
+				if (!this.field.isTileFilled(this.x, this.y + 1)) {
+					this.moveTo(this.x, this.y + 1)
+					return
+				}
+
+				if (!this.field.isTileFilled(this.x, this.y - 1)) {
+					return
+				}
+
+				const candidatePosition = [
+					[this.x - 1, this.y],
+					[this.x + 1, this.y],
+				]
+				const movablePosition = candidatePosition.filter(([x, y]) => !this.field.isTileFilled(x, y))
+				if (movablePosition.length === 0) {
+					return
+				}
+
+				this.moveTo(...movablePosition[0])
+			}
+		}
+
+		class Field {
+			constructor() {
+				this.data = [...Array(verticalBlocks)].map(() => Array(horizontalBlocks).fill(0))
+			}
+			isTileFilled(x, y) {
+				return this.getTile(x, y) !== 0
+			}
+			getTile(x, y) {
+				if (x < 0 || horizontalBlocks <= x || y < 0 || verticalBlocks <= y) {
+					return 1
+				}
+				return this.data[y][x]
+			}
+			setTile(x, y, blockInstance) {
+				if (x < 0 || horizontalBlocks <= x || y < 0 || verticalBlocks <= y) {
+					return
+				}
+				this.data[y][x] = blockInstance
+			}
+			draw() {
+				ctx.clearRect(0, 0, width, height)
+				this.data.forEach((line, y) => {
+					line.forEach((block, x) => {
+						const coordinateX = blockPerPixel * x
+						const coordinateY = blockPerPixel * y
+						if (!block) {
+							return
+						}
+						ctx.fillStyle = block.color
+						ctx.fillRect(coordinateX, coordinateY, blockPerPixel, blockPerPixel)
+					})
+				})
+
+			}
+			tick() {
+				this.data.forEach((line, y) => {
+					const reversedY = (verticalBlocks - 1) - y
+					line.forEach((_, x) => {
+						const reversedX = (horizontalBlocks - 1) - x
+						if (!this.isTileFilled(reversedX, reversedY)) {
+							return
+						}
+						const block = this.getTile(reversedX, reversedY)
+						block.tick()
+					})
+				})
+
+				this.draw()
+			}
+		}
+
+		const field = new Field()
+
+		setInterval(() => field.tick(), 1000 / 10)
+		mainCanvas.addEventListener('click', () => field.tick())
+
+		const size = 6
+		const centerX = Math.round(horizontalBlocks / 2)
+		for (let x = -(size / 2); x <= size / 2; x++) {
+			for (let y = 0; y <= size; y++) {
+				field.setTile(centerX + x, y, new Block(field, centerX + x, y))
+			}
+		}
+	</script>
+</body>
+
+</html>
