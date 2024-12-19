@@ -14,7 +14,7 @@
 			return array[Math.floor(Math.random() * array.length)]
 		}
 
-		const blockPerPixel = 2
+		const blockPerPixel = 3
 		const horizontalBlocks = 250
 		const verticalBlocks = 250
 
@@ -35,7 +35,7 @@
 				this.field = field
 				this.x = x
 				this.y = y
-				this.color = 'black'
+				this.color = '#ff0000'
 			}
 			moveTo(x, y) {
 				this.field.setTile(this.x, this.y, 0)
@@ -45,6 +45,9 @@
 			}
 			tick() {
 				if (!this.field.isTileFilled(this.x, this.y + 1)) {
+					if (Math.random() < 0.05) {
+						return
+					}
 					this.moveTo(this.x, this.y + 1)
 					return
 				}
