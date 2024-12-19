@@ -146,8 +146,16 @@
 			y: -1,
 		}
 
-		mainCanvas.addEventListener('pointerdown', () => pointerState.pressing = true)
-		mainCanvas.addEventListener('pointerup', () => pointerState.pressing = false)
+		mainCanvas.addEventListener('pointerdown', e => {
+			pointerState.x = e.offsetX
+			pointerState.y = e.offsetY
+			pointerState.pressing = true
+		})
+		mainCanvas.addEventListener('pointerup', e => {
+			pointerState.x = e.offsetX
+			pointerState.y = e.offsetY
+			pointerState.pressing = false
+		})
 		mainCanvas.addEventListener('pointermove', e => {
 			if (!pointerState.pressing) {
 				return
