@@ -104,6 +104,13 @@
 
 			}
 			tick() {
+				if (pointerState.pressing) {
+					const pointerX = Math.floor(pointerState.x / blockPerPixel * devicePixelRatio)
+					const pointerY = Math.floor(pointerState.y / blockPerPixel * devicePixelRatio)
+
+					field.setTile(pointerX, pointerY, new Block(field, pointerX, pointerY))
+				}
+
 				this.data.forEach((line, y) => {
 					const reversedY = (verticalBlocks - 1) - y
 					line.forEach((_, x) => {
@@ -133,18 +140,21 @@
 			}
 		}
 
-		let isPointerDowned = false
+		const pointerState = {
+			pressing: false,
+			x: -1,
+			y: -1,
+		}
 
-		mainCanvas.addEventListener('pointerdown', () => isPointerDowned = true)
-		mainCanvas.addEventListener('pointerup', () => isPointerDowned = false)
+		mainCanvas.addEventListener('pointerdown', () => pointerState.pressing = true)
+		mainCanvas.addEventListener('pointerup', () => pointerState.pressing = false)
 		mainCanvas.addEventListener('pointermove', e => {
-			if (!isPointerDowned) {
+			if (!pointerState.pressing) {
 				return
 			}
-			const pointerX = Math.floor(e.offsetX / blockPerPixel * devicePixelRatio)
-			const pointerY = Math.floor(e.offsetY / blockPerPixel * devicePixelRatio)
 
-			field.setTile(pointerX, pointerY, new Block(field, pointerX, pointerY))
+			pointerState.x = e.offsetX
+			pointerState.y = e.offsetY
 		})
 
 		//for (let y = 0; y <= 30; y++) {
