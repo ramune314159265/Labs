@@ -36,6 +36,7 @@
 				this.x = x
 				this.y = y
 				this.color = 'black'
+				this.randomMoved = false
 			}
 			moveTo(x, y) {
 				this.field.setTile(this.x, this.y, 0)
@@ -45,15 +46,19 @@
 			}
 			tick() {
 				if (!this.field.isTileFilled(this.x, this.y + 1)) {
-					if (Math.random() < 0.05) {
+					if (Math.random() < 0.01) {
 						return
 					}
 					this.moveTo(this.x, this.y + 1)
+					this.randomMoved = false
 					return
 				}
 
 				if (!this.field.isTileFilled(this.x, this.y - 1)) {
-					if (Math.random() > 0.05) {
+					if(this.randomMoved){
+						return
+					}
+					if (Math.random() > 0.5) {
 						return
 					}
 					const candidatePosition = [
@@ -65,7 +70,12 @@
 						return
 					}
 					this.moveTo(...randomFromArray(movablePosition))
+					this.randomMoved = true
 
+					return
+				}
+
+				if (Math.random() < 0.05) {
 					return
 				}
 
