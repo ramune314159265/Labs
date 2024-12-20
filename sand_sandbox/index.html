@@ -36,13 +36,23 @@
 				this.x = x
 				this.y = y
 				this.color = 'black'
-				this.randomMoved = false
 			}
 			moveTo(x, y) {
 				this.field.setTile(this.x, this.y, 0)
 				this.x = x
 				this.y = y
 				this.field.setTile(x, y, this)
+			}
+			tick() {
+
+			}
+		}
+
+		class Sand extends Block {
+			constructor(field, x, y) {
+				super(field, x, y)
+				this.color = 'brown'
+				this.randomMoved = false
 			}
 			tick() {
 				if (!this.field.isTileFilled(this.x, this.y + 1)) {
@@ -137,7 +147,7 @@
 					const size = 2
 					for (let x = -(size / 2); x <= size / 2; x++) {
 						for (let y = 0; y <= size; y++) {
-							this.setTile(x + pointerX, y + pointerY, new Block(this, x + pointerX, y + pointerY))
+							this.setTile(x + pointerX, y + pointerY, new DrawBlockClass(this, x + pointerX, y + pointerY))
 						}
 					}
 				}
@@ -167,7 +177,7 @@
 		const centerX = Math.round(horizontalBlocks / 2)
 		for (let x = -(size / 2); x <= size / 2; x++) {
 			for (let y = 0; y <= size; y++) {
-				field.setTile(centerX + x, y, new Block(field, centerX + x, y))
+				field.setTile(centerX + x, y, new Sand(field, centerX + x, y))
 			}
 		}
 
@@ -196,6 +206,8 @@
 			pointerState.y = e.offsetY
 		})
 		mainCanvas.addEventListener('touchmove', e => e.preventDefault(), { passive: false })
+
+		let DrawBlockClass = Sand
 
 		//for (let y = 0; y <= 30; y++) {
 		//	field.setTile(centerX, y, new Block(field, centerX, y))
