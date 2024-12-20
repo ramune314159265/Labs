@@ -14,7 +14,7 @@
 			return array[Math.floor(Math.random() * array.length)]
 		}
 
-		const blockPerPixel = 3
+		const blockPerPixel = 4
 		const horizontalBlocks = 250
 		const verticalBlocks = 250
 
@@ -55,7 +55,7 @@
 				}
 
 				if (!this.field.isTileFilled(this.x, this.y - 1)) {
-					if(this.randomMoved){
+					if (this.randomMoved) {
 						return
 					}
 					if (Math.random() > 0.5) {
@@ -195,6 +195,7 @@
 			pointerState.x = e.offsetX
 			pointerState.y = e.offsetY
 		})
+		mainCanvas.addEventListener('touchmove', e => e.preventDefault(), { passive: false })
 
 		//for (let y = 0; y <= 30; y++) {
 		//	field.setTile(centerX, y, new Block(field, centerX, y))
