@@ -108,6 +108,7 @@
 		class Field {
 			constructor() {
 				this.data = [...Array(verticalBlocks)].map(() => Array(horizontalBlocks).fill(0))
+				this.shouldScanReversed = false
 			}
 			isTileFilled(x, y) {
 				return this.getTile(x, y) !== 0
@@ -155,14 +156,15 @@
 				this.data.forEach((line, y) => {
 					const reversedY = (verticalBlocks - 1) - y
 					line.forEach((_, x) => {
-						const reversedX = (horizontalBlocks - 1) - x
-						if (!this.isTileFilled(reversedX, reversedY)) {
+						const targetX = this.shouldScanReversed ? (horizontalBlocks - 1) - x : x
+						if (!this.isTileFilled(targetX, reversedY)) {
 							return
 						}
-						const block = this.getTile(reversedX, reversedY)
+						const block = this.getTile(targetX, reversedY)
 						block.tick()
 					})
 				})
+				this.shouldScanReversed = !this.shouldScanReversed
 
 				this.draw()
 			}
