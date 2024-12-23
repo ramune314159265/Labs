@@ -101,7 +101,7 @@
 				const previousX = this.x
 				this.moveTo(...randomFromArray(movablePosition))
 
-				this.field.getTile(previousX, this.y - 1)?.moveTo(previousX, this.y)
+				this.field.getTile(previousX, this.y - 1).moveTo?.(previousX, this.y)
 			}
 		}
 
