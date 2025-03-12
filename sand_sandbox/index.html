@@ -148,6 +148,10 @@
 					const size = 2
 					for (let x = -(size / 2); x <= size / 2; x++) {
 						for (let y = 0; y <= size; y++) {
+							if (!DrawBlockClass) {
+								this.setTile(x + pointerX, y + pointerY, 0)
+								continue
+							}
 							this.setTile(x + pointerX, y + pointerY, new DrawBlockClass(this, x + pointerX, y + pointerY))
 						}
 					}
